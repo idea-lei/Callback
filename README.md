@@ -3,22 +3,18 @@
 Callback mechanism that solves following problems:
 
 + Unification of async and sync callback due to sync to async transition.
-+ parallel async event invocation (`Task.WhenAll`), even for sync actions.
++ parallel async handler invocation (`Task.WhenAll`), even for sync actions.
 + Task cancellation
 
-Callback is **NOT** traditional event that follows the event signature convention: 
-
-```c#
-event YourEventHandler(object sender, YourEventArgs arg)
-```
+Callback is flexible `MulticastDelegate`, but not `event`.
 
 Callback mainly uses `Action` and `Func`.
 
 ## Types
 
-### EventCallback
+### Callback
 
-`EventCallback` is event-like callback mechanism to unify sync and async callback. It supports event-like operation including `+=`, `-=`.
+`Callback` is `MulticastDelegate`-like callback mechanism to unify sync and async callback.
 
 Handlers will be executed parallelly and Cancellation is supported. 
 

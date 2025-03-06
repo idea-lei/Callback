@@ -1,4 +1,4 @@
-﻿namespace Callback;
+﻿namespace CallbackCore;
 
 public readonly struct MethodCallback
 {

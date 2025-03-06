@@ -1,7 +1,7 @@
 ﻿using Callback;
 using Callback.LogicTest;
 
-EventCallback callback = new Action(() => TestUtils.SleepAndPrint(1000));
+MulticastCallback callback = new Action(() => TestUtils.SleepAndPrint(1000));
 callback += () => TestUtils.SleepAndPrint(1000);
 callback += () => TestUtils.DelayAndPrint(1000);
 

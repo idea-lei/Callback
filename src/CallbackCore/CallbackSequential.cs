@@ -1,6 +1,6 @@
-﻿namespace Callback;
+﻿namespace CallbackCore;
 
-public class EventCallbackSequential
+public class CallbackSequential
 {
     public async Task InvokeAsync(CancellationToken ct = default)
     {
@@ -30,17 +30,17 @@ public class EventCallbackSequential
     private readonly List<Delegate> _handlers = new();
 
     #region implicit conversion & constructors
-    public EventCallbackSequential(Action action) => _handlers.Add(action);
-    public EventCallbackSequential(Func<Task> func) => _handlers.Add(func);
-    public EventCallbackSequential(Func<CancellationToken, Task> func) => _handlers.Add(func);
+    public CallbackSequential(Action action) => _handlers.Add(action);
+    public CallbackSequential(Func<Task> func) => _handlers.Add(func);
+    public CallbackSequential(Func<CancellationToken, Task> func) => _handlers.Add(func);
 
-    public static implicit operator EventCallbackSequential(Action action) => new(action);
-    public static implicit operator EventCallbackSequential(Func<Task> func) => new(func);
-    public static implicit operator EventCallbackSequential(Func<CancellationToken, Task> func) => new(func);
+    public static implicit operator CallbackSequential(Action action) => new(action);
+    public static implicit operator CallbackSequential(Func<Task> func) => new(func);
+    public static implicit operator CallbackSequential(Func<CancellationToken, Task> func) => new(func);
     #endregion
 
     #region operators
-    public static EventCallbackSequential operator +(EventCallbackSequential? left, Action right)
+    public static CallbackSequential operator +(CallbackSequential? left, Action right)
     {
         if (left == null)
             return new(right);
@@ -48,7 +48,7 @@ public class EventCallbackSequential
         left._handlers.Add(right);
         return left;
     }
-    public static EventCallbackSequential operator +(EventCallbackSequential? left, Func<Task> right)
+    public static CallbackSequential operator +(CallbackSequential? left, Func<Task> right)
     {
         if (left == null)
             return new(right);
@@ -56,7 +56,7 @@ public class EventCallbackSequential
         left._handlers.Add(right);
         return left;
     }
-    public static EventCallbackSequential operator +(EventCallbackSequential? left, Func<CancellationToken, Task> right)
+    public static CallbackSequential operator +(CallbackSequential? left, Func<CancellationToken, Task> right)
     {
         if (left == null)
             return new(right);
@@ -64,17 +64,17 @@ public class EventCallbackSequential
         left._handlers.Add(right);
         return left;
     }
-    public static EventCallbackSequential operator -(EventCallbackSequential left, Action right)
+    public static CallbackSequential operator -(CallbackSequential left, Action right)
     {
         left._handlers.Remove(right);
         return left;
     }
-    public static EventCallbackSequential operator -(EventCallbackSequential left, Func<Task> right)
+    public static CallbackSequential operator -(CallbackSequential left, Func<Task> right)
     {
         left._handlers.Remove(right);
         return left;
     }
-    public static EventCallbackSequential operator -(EventCallbackSequential left, Func<CancellationToken, Task> right)
+    public static CallbackSequential operator -(CallbackSequential left, Func<CancellationToken, Task> right)
     {
         left._handlers.Remove(right);
         return left;

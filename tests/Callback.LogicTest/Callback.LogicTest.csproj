@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Callback\Callback.csproj" />
+    <ProjectReference Include="..\src\Callback\CallbackCore.csproj" />
   </ItemGroup>
 
 </Project>

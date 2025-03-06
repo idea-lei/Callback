@@ -1,6 +1,6 @@
-﻿namespace Callback;
+﻿namespace CallbackCore;
 
-public class EventCallback<TArg1, TArg2>
+public class Callback<TArg1, TArg2>
 {
     public async Task InvokeAsync(TArg1 arg1, TArg2 arg2, CancellationToken ct = default)
     {
@@ -34,57 +34,57 @@ public class EventCallback<TArg1, TArg2>
     private readonly object _lock = new();
 #endif
 
-    public EventCallback(Action<TArg1, TArg2> action) => _actions.Add(action);
-    public EventCallback(Func<TArg1, TArg2, Task> func) => _funcs.Add(func);
-    public EventCallback(Func<TArg1, TArg2, CancellationToken, Task> func) => _cancelableFuncs.Add(func);
+    public Callback(Action<TArg1, TArg2> action) => _actions.Add(action);
+    public Callback(Func<TArg1, TArg2, Task> func) => _funcs.Add(func);
+    public Callback(Func<TArg1, TArg2, CancellationToken, Task> func) => _cancelableFuncs.Add(func);
     #endregion
 
     #region Operators
-    public static EventCallback<TArg1, TArg2> operator +(EventCallback<TArg1, TArg2>? left, Action<TArg1, TArg2> right)
+    public static Callback<TArg1, TArg2> operator +(Callback<TArg1, TArg2>? left, Action<TArg1, TArg2> right)
     {
         if (left == null)
-            return new EventCallback<TArg1, TArg2>(right);
+            return new Callback<TArg1, TArg2>(right);
 
         lock (left._lock)
             left._actions.Add(right);
 
         return left;
     }
-    public static EventCallback<TArg1, TArg2> operator +(EventCallback<TArg1, TArg2>? left, Func<TArg1, TArg2, Task> right)
+    public static Callback<TArg1, TArg2> operator +(Callback<TArg1, TArg2>? left, Func<TArg1, TArg2, Task> right)
     {
         if (left == null)
-            return new EventCallback<TArg1, TArg2>(right);
+            return new Callback<TArg1, TArg2>(right);
 
         lock (left._lock)
             left._funcs.Add(right);
 
         return left;
     }
-    public static EventCallback<TArg1, TArg2> operator +(EventCallback<TArg1, TArg2>? left, Func<TArg1, TArg2, CancellationToken, Task> right)
+    public static Callback<TArg1, TArg2> operator +(Callback<TArg1, TArg2>? left, Func<TArg1, TArg2, CancellationToken, Task> right)
     {
         if (left == null)
-            return new EventCallback<TArg1, TArg2>(right);
+            return new Callback<TArg1, TArg2>(right);
 
         lock (left._lock)
             left._cancelableFuncs.Add(right);
 
         return left;
     }
-    public static EventCallback<TArg1, TArg2> operator -(EventCallback<TArg1, TArg2> left, Action<TArg1, TArg2> right)
+    public static Callback<TArg1, TArg2> operator -(Callback<TArg1, TArg2> left, Action<TArg1, TArg2> right)
     {
         lock (left._lock)
             left._actions.Remove(right);
 
         return left;
     }
-    public static EventCallback<TArg1, TArg2> operator -(EventCallback<TArg1, TArg2> left, Func<TArg1, TArg2, Task> right)
+    public static Callback<TArg1, TArg2> operator -(Callback<TArg1, TArg2> left, Func<TArg1, TArg2, Task> right)
     {
         lock (left._lock)
             left._funcs.Remove(right);
 
         return left;
     }
-    public static EventCallback<TArg1, TArg2> operator -(EventCallback<TArg1, TArg2> left, Func<TArg1, TArg2, CancellationToken, Task> right)
+    public static Callback<TArg1, TArg2> operator -(Callback<TArg1, TArg2> left, Func<TArg1, TArg2, CancellationToken, Task> right)
     {
         lock (left._lock)
             left._cancelableFuncs.Remove(right);
@@ -94,8 +94,8 @@ public class EventCallback<TArg1, TArg2>
     #endregion
 
     #region Implicit Conversions
-    public static implicit operator EventCallback<TArg1, TArg2>(Action<TArg1, TArg2> action) => new(action);
-    public static implicit operator EventCallback<TArg1, TArg2>(Func<TArg1, TArg2, Task> func) => new(func);
-    public static implicit operator EventCallback<TArg1, TArg2>(Func<TArg1, TArg2, CancellationToken, Task> func) => new(func);
+    public static implicit operator Callback<TArg1, TArg2>(Action<TArg1, TArg2> action) => new(action);
+    public static implicit operator Callback<TArg1, TArg2>(Func<TArg1, TArg2, Task> func) => new(func);
+    public static implicit operator Callback<TArg1, TArg2>(Func<TArg1, TArg2, CancellationToken, Task> func) => new(func);
     #endregion
 }
