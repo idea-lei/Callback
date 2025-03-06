@@ -18,9 +18,9 @@ Callback mainly uses `Action` and `Func`.
 
 Handlers will be executed parallelly and Cancellation is supported. 
 
-### EventCallbackSequential
+### CallbackSequential
 
-The only difference between this and `EventCallback` would be that this class will invoke the handler methods in (registration) sequence, just like the normal event does. This class is designed to be separated from `EventCallback` to make sure that users will know what they are doing / using.
+The only difference between this and `Callback` would be that this class will invoke the handler methods in (registration) sequence, just like the normal `MulticastDelegate` does. This class is designed to be separated from `Callback` to make sure that users will know what they are doing / using.
 
 **Usage of this class is strongly discouraged.** Use this class only if all the following requirements can be fulfilled:
 
@@ -34,4 +34,12 @@ The only difference between this and `EventCallback` would be that this class wi
 ### MethodCallback
 
 `MethodCallback` is delegate-like (`Delegate`) callback mechanism that allow **only one handler** and **one time initialization** to unify sync and async callback. It's light-weight and does not allocate.
+
+## Remarks
+
+1. Even `MulticastDelegate` represents a collection of `Delegate`, and both `Action` and `Func` are `MulticastDelegate`, I still have chosen `List<Action>` and `List<Func<Task>>` to store the delegates, it's even slightly faster and allocate less than using `Action` and `Func` directly. (maybe `GetInvocationList` is slow?)
+
+2. Callback is not event and not suitable for event! The `event` keyword is language level delegate wrapper to restrict access to delegate, I can not apply the keyword to `Callback`, which means you can not restrict the `InvokeAsync` to be only available in the declaring class.
+
+   Check demos if you do want to have a event-like Callback.
 

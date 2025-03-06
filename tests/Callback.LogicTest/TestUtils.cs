@@ -1,4 +1,4 @@
-﻿namespace Callback.LogicTest;
+﻿namespace Tests;
 
 internal static class TestUtils
 {

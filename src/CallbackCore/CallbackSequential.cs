@@ -9,10 +9,10 @@ public class CallbackSequential
             switch (handler)
             {
                 case Action action:
-                    action();
+                    await Task.Run(action, ct);
                     break;
                 case Func<Task> func:
-                    await func();
+                    await Task.Run(func, ct);
                     break;
                 case Func<CancellationToken, Task> cancelableFunc:
                     await cancelableFunc(ct);
@@ -27,9 +27,10 @@ public class CallbackSequential
     public void Invoke(CancellationToken ct = default)
         => InvokeAsync(ct).ConfigureAwait(false).GetAwaiter().GetResult();
 
-    private readonly List<Delegate> _handlers = new();
+    private readonly List<Delegate> _handlers = [];
 
     #region implicit conversion & constructors
+    public CallbackSequential() { }
     public CallbackSequential(Action action) => _handlers.Add(action);
     public CallbackSequential(Func<Task> func) => _handlers.Add(func);
     public CallbackSequential(Func<CancellationToken, Task> func) => _handlers.Add(func);

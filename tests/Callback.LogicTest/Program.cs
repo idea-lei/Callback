@@ -1,8 +1,5 @@
-﻿using Callback;
-using Callback.LogicTest;
+﻿using BenchmarkDotNet.Running;
+using CallbackCore;
+using Tests;
 
-MulticastCallback callback = new Action(() => TestUtils.SleepAndPrint(1000));
-callback += () => TestUtils.SleepAndPrint(1000);
-callback += () => TestUtils.DelayAndPrint(1000);
-
-await callback.InvokeAsync();
+BenchmarkRunner.Run<CallbackBenchmarks>();

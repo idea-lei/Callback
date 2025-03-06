@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallbackCore", "src\Callbac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Callback.LogicTest", "tests\Callback.LogicTest\Callback.LogicTest.csproj", "{A6241EA9-A7A5-478C-A0E1-645756651B7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallbackDemo", "src\CallbackDemo\CallbackDemo.csproj", "{EF5A9ED7-78F3-429F-AAD1-8C5F850ABAB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{A6241EA9-A7A5-478C-A0E1-645756651B7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6241EA9-A7A5-478C-A0E1-645756651B7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6241EA9-A7A5-478C-A0E1-645756651B7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF5A9ED7-78F3-429F-AAD1-8C5F850ABAB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF5A9ED7-78F3-429F-AAD1-8C5F850ABAB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF5A9ED7-78F3-429F-AAD1-8C5F850ABAB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF5A9ED7-78F3-429F-AAD1-8C5F850ABAB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -37,5 +43,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{42550E14-94D8-4679-A6F0-B343C07F1A98} = {40A870B8-32B4-4291-A668-15CD72C779AD}
 		{A6241EA9-A7A5-478C-A0E1-645756651B7C} = {6132C666-07D7-4902-BDD1-C3078B743597}
+		{EF5A9ED7-78F3-429F-AAD1-8C5F850ABAB3} = {40A870B8-32B4-4291-A668-15CD72C779AD}
 	EndGlobalSection
 EndGlobal

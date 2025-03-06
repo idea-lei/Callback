@@ -24,9 +24,9 @@ public class Callback
         => InvokeAsync(ct).ConfigureAwait(false).GetAwaiter().GetResult();
 
     #region Constructors & Fields & Properties
-    private readonly List<Action> _actions = new();
-    private readonly List<Func<Task>> _funcs = new();
-    private readonly List<Func<CancellationToken, Task>> _cancelableFuncs = new();
+    private readonly List<Action> _actions = [];
+    private readonly List<Func<Task>> _funcs = [];
+    private readonly List<Func<CancellationToken, Task>> _cancelableFuncs = [];
 
 #if NET9_0_OR_GREATER
     private readonly Lock _lock = new();
@@ -34,6 +34,7 @@ public class Callback
     private readonly object _lock = new();
 #endif
 
+    public Callback() { }
     public Callback(Action action) => _actions.Add(action);
     public Callback(Func<Task> func) => _funcs.Add(func);
     public Callback(Func<CancellationToken, Task> func) => _cancelableFuncs.Add(func);

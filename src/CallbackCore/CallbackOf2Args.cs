@@ -24,9 +24,9 @@ public class Callback<TArg1, TArg2>
         => InvokeAsync(arg1, arg2, ct).ConfigureAwait(false).GetAwaiter().GetResult();
 
     #region Constructors & Fields & Properties
-    private readonly List<Action<TArg1, TArg2>> _actions = new();
-    private readonly List<Func<TArg1, TArg2, Task>> _funcs = new();
-    private readonly List<Func<TArg1, TArg2, CancellationToken, Task>> _cancelableFuncs = new();
+    private readonly List<Action<TArg1, TArg2>> _actions = [];
+    private readonly List<Func<TArg1, TArg2, Task>> _funcs = [];
+    private readonly List<Func<TArg1, TArg2, CancellationToken, Task>> _cancelableFuncs = [];
 
 #if NET9_0_OR_GREATER
     private readonly Lock _lock = new();
@@ -34,6 +34,7 @@ public class Callback<TArg1, TArg2>
     private readonly object _lock = new();
 #endif
 
+    public Callback() { }
     public Callback(Action<TArg1, TArg2> action) => _actions.Add(action);
     public Callback(Func<TArg1, TArg2, Task> func) => _funcs.Add(func);
     public Callback(Func<TArg1, TArg2, CancellationToken, Task> func) => _cancelableFuncs.Add(func);
@@ -50,6 +51,7 @@ public class Callback<TArg1, TArg2>
 
         return left;
     }
+
     public static Callback<TArg1, TArg2> operator +(Callback<TArg1, TArg2>? left, Func<TArg1, TArg2, Task> right)
     {
         if (left == null)
@@ -60,6 +62,7 @@ public class Callback<TArg1, TArg2>
 
         return left;
     }
+
     public static Callback<TArg1, TArg2> operator +(Callback<TArg1, TArg2>? left, Func<TArg1, TArg2, CancellationToken, Task> right)
     {
         if (left == null)
@@ -70,6 +73,7 @@ public class Callback<TArg1, TArg2>
 
         return left;
     }
+
     public static Callback<TArg1, TArg2> operator -(Callback<TArg1, TArg2> left, Action<TArg1, TArg2> right)
     {
         lock (left._lock)
@@ -77,6 +81,7 @@ public class Callback<TArg1, TArg2>
 
         return left;
     }
+
     public static Callback<TArg1, TArg2> operator -(Callback<TArg1, TArg2> left, Func<TArg1, TArg2, Task> right)
     {
         lock (left._lock)
@@ -84,6 +89,7 @@ public class Callback<TArg1, TArg2>
 
         return left;
     }
+
     public static Callback<TArg1, TArg2> operator -(Callback<TArg1, TArg2> left, Func<TArg1, TArg2, CancellationToken, Task> right)
     {
         lock (left._lock)
