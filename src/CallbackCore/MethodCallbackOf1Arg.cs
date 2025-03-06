@@ -1,4 +1,4 @@
-﻿namespace Callback;
+﻿namespace CallbackCore;
 
 public readonly struct MethodCallback<TArg>
 {
@@ -18,7 +18,7 @@ public readonly struct MethodCallback<TArg>
         }
     }
 
-    public void Invoke(TArg arg)
+    public void Invoke(TArg arg, CancellationToken ct = default)
     {
         switch (@delegate)
         {
@@ -26,15 +26,15 @@ public readonly struct MethodCallback<TArg>
                 action(arg);
                 break;
             case Func<TArg, Task> func:
-                Task.Run(() => func(arg)).GetAwaiter().GetResult();
+                Task.Run(() => func(arg), ct).GetAwaiter().GetResult();
                 break;
             case Func<TArg, CancellationToken, Task> cancelableFunc:
-                cancelableFunc(arg, CancellationToken.None).GetAwaiter().GetResult();
+                cancelableFunc(arg, ct).GetAwaiter().GetResult();
                 break;
         }
     }
 
-    private readonly Delegate? @delegate;
+    private readonly Delegate @delegate;
 
     public MethodCallback(Action<TArg> action) => @delegate = action;
     public MethodCallback(Func<TArg, Task> func) => @delegate = func;

@@ -1,6 +1,6 @@
-﻿namespace Callback;
+﻿namespace CallbackCore;
 
-public class EventCallback
+public class Callback
 {
     public async Task InvokeAsync(CancellationToken ct = default)
     {
@@ -24,9 +24,9 @@ public class EventCallback
         => InvokeAsync(ct).ConfigureAwait(false).GetAwaiter().GetResult();
 
     #region Constructors & Fields & Properties
-    private readonly List<Action> _actions = new();
-    private readonly List<Func<Task>> _funcs = new();
-    private readonly List<Func<CancellationToken, Task>> _cancelableFuncs = new();
+    private readonly List<Action> _actions = [];
+    private readonly List<Func<Task>> _funcs = [];
+    private readonly List<Func<CancellationToken, Task>> _cancelableFuncs = [];
 
 #if NET9_0_OR_GREATER
     private readonly Lock _lock = new();
@@ -34,57 +34,58 @@ public class EventCallback
     private readonly object _lock = new();
 #endif
 
-    public EventCallback(Action action) => _actions.Add(action);
-    public EventCallback(Func<Task> func) => _funcs.Add(func);
-    public EventCallback(Func<CancellationToken, Task> func) => _cancelableFuncs.Add(func);
+    public Callback() { }
+    public Callback(Action action) => _actions.Add(action);
+    public Callback(Func<Task> func) => _funcs.Add(func);
+    public Callback(Func<CancellationToken, Task> func) => _cancelableFuncs.Add(func);
     #endregion
 
     #region Operators
-    public static EventCallback operator +(EventCallback? left, Action right)
+    public static Callback operator +(Callback? left, Action right)
     {
         if (left == null)
-            return new EventCallback(right);
+            return new Callback(right);
 
         lock (left._lock)
             left._actions.Add(right);
 
         return left;
     }
-    public static EventCallback operator +(EventCallback? left, Func<Task> right)
+    public static Callback operator +(Callback? left, Func<Task> right)
     {
         if (left == null)
-            return new EventCallback(right);
+            return new Callback(right);
 
         lock (left._lock)
             left._funcs.Add(right);
 
         return left;
     }
-    public static EventCallback operator +(EventCallback? left, Func<CancellationToken, Task> right)
+    public static Callback operator +(Callback? left, Func<CancellationToken, Task> right)
     {
         if (left == null)
-            return new EventCallback(right);
+            return new Callback(right);
 
         lock (left._lock)
             left._cancelableFuncs.Add(right);
 
         return left;
     }
-    public static EventCallback operator -(EventCallback left, Action right)
+    public static Callback operator -(Callback left, Action right)
     {
         lock (left._lock)
             left._actions.Remove(right);
 
         return left;
     }
-    public static EventCallback operator -(EventCallback left, Func<Task> right)
+    public static Callback operator -(Callback left, Func<Task> right)
     {
         lock (left._lock)
             left._funcs.Remove(right);
 
         return left;
     }
-    public static EventCallback operator -(EventCallback left, Func<CancellationToken, Task> right)
+    public static Callback operator -(Callback left, Func<CancellationToken, Task> right)
     {
         lock (left._lock)
             left._cancelableFuncs.Remove(right);
@@ -94,8 +95,8 @@ public class EventCallback
     #endregion
 
     #region Implicit Conversions
-    public static implicit operator EventCallback(Action action) => new(action);
-    public static implicit operator EventCallback(Func<Task> func) => new(func);
-    public static implicit operator EventCallback(Func<CancellationToken, Task> func) => new(func);
+    public static implicit operator Callback(Action action) => new(action);
+    public static implicit operator Callback(Func<Task> func) => new(func);
+    public static implicit operator Callback(Func<CancellationToken, Task> func) => new(func);
     #endregion
 }
