@@ -61,3 +61,17 @@ Console.WriteLine("start event-like");
 await callbackEventLike.TriggerEvent();
 Console.WriteLine("finished");
 #endregion
+
+
+
+Console.WriteLine("\n-----------------------------------------------------------------------------------\n");
+
+
+
+#region fire and forget
+var callbackForget = new Callback(() => Utils.SleepAndPrint(2000));
+Console.WriteLine("start fire and forget");
+callbackBasic.InvokeAsync(); // just do not await
+Console.WriteLine("finished");
+await Task.Delay(2500);
+#endregion

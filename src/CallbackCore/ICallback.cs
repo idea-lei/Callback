@@ -12,7 +12,7 @@ public interface IInvokeable
 /// <typeparam name="TSelf">
 /// TSelf is to determine the underlying type for the + operator when left is null
 /// </typeparam>
-public interface IEventRegistry<TSelf> where TSelf : new()
+public interface IDelegateRegistry<TSelf> where TSelf : new()
 {
     void Add(Action action);
     void Add(Func<Task> func);
@@ -21,44 +21,44 @@ public interface IEventRegistry<TSelf> where TSelf : new()
     void Remove(Func<Task> func);
     void Remove(Func<CancellationToken, Task> func);
 
-    static IEventRegistry<TSelf> operator +(IEventRegistry<TSelf>? registerable, Action @delegate)
+    static IDelegateRegistry<TSelf> operator +(IDelegateRegistry<TSelf>? registerable, Action @delegate)
     {
-        registerable ??= (IEventRegistry<TSelf>)new TSelf();
+        registerable ??= (IDelegateRegistry<TSelf>)new TSelf();
         registerable.Add(@delegate);
         return registerable;
     }
 
-    static IEventRegistry<TSelf> operator +(IEventRegistry<TSelf>? registerable, Func<Task> @delegate)
+    static IDelegateRegistry<TSelf> operator +(IDelegateRegistry<TSelf>? registerable, Func<Task> @delegate)
     {
-        registerable ??= (IEventRegistry<TSelf>)new TSelf();
+        registerable ??= (IDelegateRegistry<TSelf>)new TSelf();
         registerable.Add(@delegate);
         return registerable;
     }
 
-    static IEventRegistry<TSelf> operator +(IEventRegistry<TSelf>? registerable, Func<CancellationToken, Task> @delegate)
+    static IDelegateRegistry<TSelf> operator +(IDelegateRegistry<TSelf>? registerable, Func<CancellationToken, Task> @delegate)
     {
-        registerable ??= (IEventRegistry<TSelf>)new TSelf();
+        registerable ??= (IDelegateRegistry<TSelf>)new TSelf();
         registerable.Add(@delegate);
         return registerable;
     }
 
-    static IEventRegistry<TSelf> operator -(IEventRegistry<TSelf> registerable, Action @delegate)
+    static IDelegateRegistry<TSelf> operator -(IDelegateRegistry<TSelf> registerable, Action @delegate)
     {
         registerable.Remove(@delegate);
         return registerable;
     }
 
-    static IEventRegistry<TSelf> operator -(IEventRegistry<TSelf> registerable, Func<Task> @delegate)
+    static IDelegateRegistry<TSelf> operator -(IDelegateRegistry<TSelf> registerable, Func<Task> @delegate)
     {
         registerable.Remove(@delegate);
         return registerable;
     }
 
-    static IEventRegistry<TSelf> operator -(IEventRegistry<TSelf> registerable, Func<CancellationToken, Task> @delegate)
+    static IDelegateRegistry<TSelf> operator -(IDelegateRegistry<TSelf> registerable, Func<CancellationToken, Task> @delegate)
     {
         registerable.Remove(@delegate);
         return registerable;
     }
 }
 
-public interface ICallback<TSelf> : IInvokeable, IEventRegistry<TSelf> where TSelf : new() { }
+public interface ICallback<TSelf> : IInvokeable, IDelegateRegistry<TSelf> where TSelf : new() { }
