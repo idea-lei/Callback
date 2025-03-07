@@ -1,6 +1,8 @@
-﻿namespace CallbackCore;
+﻿using System.Runtime.CompilerServices;
 
-public class CallbackSequential<TArg1, TArg2>
+namespace CallbackCore;
+
+public class CallbackSequential<TArg1, TArg2> : ICallback<CallbackSequential<TArg1, TArg2>, TArg1, TArg2>
 {
     public async Task InvokeAsync(TArg1 arg1, TArg2 arg2, CancellationToken ct = default)
     {
@@ -29,7 +31,7 @@ public class CallbackSequential<TArg1, TArg2>
 
     private readonly List<Delegate> _handlers = [];
 
-    #region implicit conversion & constructors
+    #region Constructors & Conversions
     public CallbackSequential() { }
     public CallbackSequential(Action<TArg1, TArg2> action) => _handlers.Add(action);
     public CallbackSequential(Func<TArg1, TArg2, Task> func) => _handlers.Add(func);
@@ -40,49 +42,61 @@ public class CallbackSequential<TArg1, TArg2>
     public static implicit operator CallbackSequential<TArg1, TArg2>(Func<TArg1, TArg2, CancellationToken, Task> func) => new(func);
     #endregion
 
-    #region operators
+    #region Operators
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Action<TArg1, TArg2> action) => _handlers.Add(action);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Func<TArg1, TArg2, Task> func) => _handlers.Add(func);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Func<TArg1, TArg2, CancellationToken, Task> func) => _handlers.Add(func);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Action<TArg1, TArg2> action) => _handlers.Remove(action);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Func<TArg1, TArg2, Task> func) => _handlers.Remove(func);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Func<TArg1, TArg2, CancellationToken, Task> func) => _handlers.Remove(func);
+
     public static CallbackSequential<TArg1, TArg2> operator +(CallbackSequential<TArg1, TArg2>? left, Action<TArg1, TArg2> right)
     {
-        if (left == null)
-            return new(right);
-
-        left._handlers.Add(right);
+        left ??= new();
+        left.Add(right);
         return left;
     }
 
     public static CallbackSequential<TArg1, TArg2> operator +(CallbackSequential<TArg1, TArg2>? left, Func<TArg1, TArg2, Task> right)
     {
-        if (left == null)
-            return new(right);
-
-        left._handlers.Add(right);
+        left ??= new();
+        left.Add(right);
         return left;
     }
 
     public static CallbackSequential<TArg1, TArg2> operator +(CallbackSequential<TArg1, TArg2>? left, Func<TArg1, TArg2, CancellationToken, Task> right)
     {
-        if (left == null)
-            return new(right);
-
-        left._handlers.Add(right);
+        left ??= new();
+        left.Add(right);
         return left;
     }
 
     public static CallbackSequential<TArg1, TArg2> operator -(CallbackSequential<TArg1, TArg2> left, Action<TArg1, TArg2> right)
     {
-        left._handlers.Remove(right);
+        left.Remove(right);
         return left;
     }
 
     public static CallbackSequential<TArg1, TArg2> operator -(CallbackSequential<TArg1, TArg2> left, Func<TArg1, TArg2, Task> right)
     {
-        left._handlers.Remove(right);
+        left.Remove(right);
         return left;
     }
 
     public static CallbackSequential<TArg1, TArg2> operator -(CallbackSequential<TArg1, TArg2> left, Func<TArg1, TArg2, CancellationToken, Task> right)
     {
-        left._handlers.Remove(right);
+        left.Remove(right);
         return left;
     }
     #endregion

@@ -1,10 +1,12 @@
-﻿namespace CallbackCore;
+﻿using System.Runtime.CompilerServices;
 
-public class CallbackSequential
+namespace CallbackCore;
+
+public class CallbackSequential : ICallback<CallbackSequential>
 {
     public async Task InvokeAsync(CancellationToken ct = default)
     {
-        foreach(var handler in _handlers)
+        foreach (var handler in _handlers)
         {
             switch (handler)
             {
@@ -41,43 +43,55 @@ public class CallbackSequential
     #endregion
 
     #region operators
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Action action) => _handlers.Add(action);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Func<Task> func) => _handlers.Add(func);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Func<CancellationToken, Task> func) => _handlers.Add(func);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Action action) => _handlers.Remove(action);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Func<Task> func) => _handlers.Remove(func);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Func<CancellationToken, Task> func) => _handlers.Remove(func);
+
     public static CallbackSequential operator +(CallbackSequential? left, Action right)
     {
-        if (left == null)
-            return new(right);
-
-        left._handlers.Add(right);
+        left ??= new();
+        left.Add(right);
         return left;
     }
     public static CallbackSequential operator +(CallbackSequential? left, Func<Task> right)
     {
-        if (left == null)
-            return new(right);
-
-        left._handlers.Add(right);
+        left ??= new();
+        left.Add(right);
         return left;
     }
     public static CallbackSequential operator +(CallbackSequential? left, Func<CancellationToken, Task> right)
     {
-        if (left == null)
-            return new(right);
-
-        left._handlers.Add(right);
+        left ??= new();
+        left.Add(right);
         return left;
     }
     public static CallbackSequential operator -(CallbackSequential left, Action right)
     {
-        left._handlers.Remove(right);
+        left.Remove(right);
         return left;
     }
     public static CallbackSequential operator -(CallbackSequential left, Func<Task> right)
     {
-        left._handlers.Remove(right);
+        left.Remove(right);
         return left;
     }
     public static CallbackSequential operator -(CallbackSequential left, Func<CancellationToken, Task> right)
     {
-        left._handlers.Remove(right);
+        left.Remove(right);
         return left;
     }
     #endregion

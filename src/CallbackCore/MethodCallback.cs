@@ -1,6 +1,6 @@
 ﻿namespace CallbackCore;
 
-public readonly struct MethodCallback
+public readonly struct MethodCallback : IInvokeable
 {
     public async Task InvokeAsync(CancellationToken ct = default)
     {

@@ -1,6 +1,6 @@
-﻿namespace Tests;
+﻿namespace CallbackDemo;
 
-internal static class TestUtils
+internal static class Utils
 {
     public static void SleepAndPrint(int milliSec)
     {

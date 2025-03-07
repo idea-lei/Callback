@@ -1,4 +1,4 @@
-﻿namespace CallbackCore;
+﻿namespace CallbackCore.Temp;
 
 public readonly struct MethodCallback<TArg1, TArg2>
 {

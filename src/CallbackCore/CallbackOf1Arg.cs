@@ -1,13 +1,15 @@
-﻿namespace CallbackCore;
+﻿using System.Runtime.CompilerServices;
 
-public class Callback<TArg>
+namespace CallbackCore;
+
+public class Callback<TArg> : ICallback<Callback<TArg>, TArg>
 {
     public async Task InvokeAsync(TArg arg, CancellationToken ct = default)
     {
         Task[] tasks;
         lock (_lock)
         {
-            var actionTasks = _actions.Select(a => Task.Run(() => a(arg), ct));
+            var actionTasks = _actions.Select(a => Task.Run(() => a(arg)));
             var funcTasks = _funcs.Select(f => f(arg));
             var cancelableFuncTasks = _cancelableFuncs.Select(f => f(arg, ct));
 
@@ -16,14 +18,13 @@ public class Callback<TArg>
                 .Concat(cancelableFuncTasks)
                 .ToArray();
         }
-
         await Task.WhenAll(tasks).WaitAsync(ct);
     }
 
     public void Invoke(TArg arg, CancellationToken ct = default)
         => InvokeAsync(arg, ct).ConfigureAwait(false).GetAwaiter().GetResult();
 
-    #region Constructors & Fields & Properties
+    #region Fields & Constructors
     private readonly List<Action<TArg>> _actions = [];
     private readonly List<Func<TArg, Task>> _funcs = [];
     private readonly List<Func<TArg, CancellationToken, Task>> _cancelableFuncs = [];
@@ -41,65 +42,89 @@ public class Callback<TArg>
     #endregion
 
     #region Operators
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Action<TArg> action)
+    {
+        lock (_lock)
+            _actions.Add(action);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Func<TArg, Task> func)
+    {
+        lock (_lock)
+            _funcs.Add(func);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Func<TArg, CancellationToken, Task> func)
+    {
+        lock (_lock)
+            _cancelableFuncs.Add(func);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Action<TArg> action)
+    {
+        lock (_lock)
+            _actions.Remove(action);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Func<TArg, Task> func)
+    {
+        lock (_lock)
+            _funcs.Remove(func);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Func<TArg, CancellationToken, Task> func)
+    {
+        lock (_lock)
+            _cancelableFuncs.Remove(func);
+    }
+
     public static Callback<TArg> operator +(Callback<TArg>? left, Action<TArg> right)
     {
-        if (left == null)
-            return new Callback<TArg>(right);
-
-        lock (left._lock)
-            left._actions.Add(right);
-
+        left ??= new();
+        left.Add(right);
         return left;
     }
 
     public static Callback<TArg> operator +(Callback<TArg>? left, Func<TArg, Task> right)
     {
-        if (left == null)
-            return new Callback<TArg>(right);
-
-        lock (left._lock)
-            left._funcs.Add(right);
-
+        left ??= new();
+        left.Add(right);
         return left;
     }
 
     public static Callback<TArg> operator +(Callback<TArg>? left, Func<TArg, CancellationToken, Task> right)
     {
-        if (left == null)
-            return new Callback<TArg>(right);
-
-        lock (left._lock)
-            left._cancelableFuncs.Add(right);
-
+        left ??= new();
+        left.Add(right);
         return left;
     }
 
     public static Callback<TArg> operator -(Callback<TArg> left, Action<TArg> right)
     {
-        lock (left._lock)
-            left._actions.Remove(right);
-
+        left.Remove(right);
         return left;
     }
 
     public static Callback<TArg> operator -(Callback<TArg> left, Func<TArg, Task> right)
     {
-        lock (left._lock)
-            left._funcs.Remove(right);
-
+        left.Remove(right);
         return left;
     }
 
     public static Callback<TArg> operator -(Callback<TArg> left, Func<TArg, CancellationToken, Task> right)
     {
-        lock (left._lock)
-            left._cancelableFuncs.Remove(right);
-
+        left.Remove(right);
         return left;
     }
     #endregion
 
-    #region Implicit Conversions
+    #region Conversions
     public static implicit operator Callback<TArg>(Action<TArg> action) => new(action);
     public static implicit operator Callback<TArg>(Func<TArg, Task> func) => new(func);
     public static implicit operator Callback<TArg>(Func<TArg, CancellationToken, Task> func) => new(func);

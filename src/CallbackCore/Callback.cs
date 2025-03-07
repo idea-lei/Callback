@@ -1,6 +1,8 @@
-﻿namespace CallbackCore;
+﻿using System.Runtime.CompilerServices;
 
-public class Callback
+namespace CallbackCore;
+
+public class Callback : ICallback<Callback>
 {
     public async Task InvokeAsync(CancellationToken ct = default)
     {
@@ -41,55 +43,79 @@ public class Callback
     #endregion
 
     #region Operators
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Action action)
+    {
+        lock (_lock)
+            _actions.Add(action);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Func<Task> func)
+    {
+        lock (_lock)
+            _funcs.Add(func);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Add(Func<CancellationToken, Task> func)
+    {
+        lock (_lock)
+            _cancelableFuncs.Add(func);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Action action)
+    {
+        lock (_lock)
+            _actions.Remove(action);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Func<Task> func)
+    {
+        lock (_lock)
+            _funcs.Remove(func);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Remove(Func<CancellationToken, Task> func)
+    {
+        lock (_lock)
+            _cancelableFuncs.Remove(func);
+    }
+
     public static Callback operator +(Callback? left, Action right)
     {
-        if (left == null)
-            return new Callback(right);
-
-        lock (left._lock)
-            left._actions.Add(right);
-
+        left ??= new();
+        left.Add(right);
         return left;
     }
     public static Callback operator +(Callback? left, Func<Task> right)
     {
-        if (left == null)
-            return new Callback(right);
-
-        lock (left._lock)
-            left._funcs.Add(right);
-
+        left ??= new();
+        left.Add(right);
         return left;
     }
     public static Callback operator +(Callback? left, Func<CancellationToken, Task> right)
     {
-        if (left == null)
-            return new Callback(right);
-
-        lock (left._lock)
-            left._cancelableFuncs.Add(right);
-
+        left ??= new();
+        left.Add(right);
         return left;
     }
     public static Callback operator -(Callback left, Action right)
     {
-        lock (left._lock)
-            left._actions.Remove(right);
-
+        left.Remove(right);
         return left;
     }
     public static Callback operator -(Callback left, Func<Task> right)
     {
-        lock (left._lock)
-            left._funcs.Remove(right);
-
+        left.Remove(right);
         return left;
     }
     public static Callback operator -(Callback left, Func<CancellationToken, Task> right)
     {
-        lock (left._lock)
-            left._cancelableFuncs.Remove(right);
-
+        left.Remove(right);
         return left;
     }
     #endregion
