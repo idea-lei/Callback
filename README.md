@@ -6,9 +6,9 @@ Callback mechanism that solves following problems:
 + parallel async handler invocation (`Task.WhenAll`), even for sync actions.
 + Task cancellation
 
-Callback is flexible `MulticastDelegate`, but not `event`.
+Callback is flexible `MulticastDelegate`, but not `event`. Callback mainly uses `Action` and `Func`.
 
-Callback mainly uses `Action` and `Func`.
+**Good For**: Use cases needing lightweight, customizable async callback orchestration, where libraries such as Rx are too heavy.
 
 ## Types
 
@@ -29,7 +29,7 @@ The only difference between this and `Callback` would be that this class will in
 + You do not deregister duplicate handlers. (since the target handler can not be determined (FIFO or FILO, or even specific index?)) Or you do not have any duplicate registered handlers.
 + You do not add / remove handler during execution.
 
-`EventCallbackSequential` is not thread safe, since guarantee of registration sequence means that there should be no concurrency. 
+`EventCallbackSequential` is **not thread safe**, since guarantee of registration sequence means that there should be no concurrency. 
 
 ### MethodCallback
 
@@ -43,3 +43,18 @@ The only difference between this and `Callback` would be that this class will in
 
    Check demos if you do want to have a event-like Callback.
 
+3. You need to handle exceptions by your self. You may also want to be informed if task is canceled, so `Callback` will not swallow any exception.
+
+## Best Practices
+
+- **Prefer Async Handlers**: Minimize `Action` usage to avoid `Task.Run` overhead.
+- **Avoid `CallbackSequential`**: Redesign workflows to avoid order dependencies.
+- **Use `MethodCallback` for Single-Use**: Ideal for factory patterns or one-time delegates.
+
+## Alternatives
+
+Consider these native .NET tools for complex scenarios:
+
+- **System.Reactive (Rx)**: For event-driven pipelines with backpressure/transformation.
+- **TPL Dataflow**: For parallel workflows with buffering/batching.
+- **Channels**: For producer-consumer patterns.
