@@ -45,6 +45,8 @@ The only difference between this and `Callback` would be that this class will in
 
 3. You need to handle exceptions by your self. You may also want to be informed if task is canceled, so `Callback` will not swallow any exception.
 
+4. Can not actually cancel a running sync action due to its nature. cancellation for `Action` and `Func<Task>` only work when corresponding task is not started. (like if you have many subscriptions and they are not fully started.) So the option with `CancelltionToken` is preferred.
+
 ## Best Practices
 
 - **Prefer Async Handlers**: Minimize `Action` usage to avoid `Task.Run` overhead.

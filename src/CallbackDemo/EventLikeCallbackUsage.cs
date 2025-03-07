@@ -12,9 +12,8 @@ internal class EventLikeCallbackUsage
     private Callback _callback => (Callback)Callback;
     public IEventRegistry<Callback> Callback = new Callback();
 
-    public async Task TriggerEventAfter(int ms)
+    public async Task TriggerEvent()
     {
-        await Task.Delay(ms);
         await _callback.InvokeAsync();
     }
 }
