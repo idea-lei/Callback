@@ -63,7 +63,3 @@ Consider these native .NET tools for complex scenarios:
 - **System.Reactive (Rx)**: For event-driven pipelines with backpressure/transformation.
 - **TPL Dataflow**: For parallel workflows with buffering/batching.
 - **Channels**: For producer-consumer patterns.
-
-
-
-☕ [Consider buy me a coffee?](https://www.buymeacoffee.com/idealei) 🥰
