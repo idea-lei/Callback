@@ -1,9 +1,10 @@
 # Callback
 
-Callback mechanism that solves following problems:
+Callback mechanism that solves following problems regarding native C# event/delegate system:
 
 + Unification of async and sync callback due to sync to async transition.
 + parallel invocation (`Task.WhenAll`), even for sync actions.
++ Waiting for Execution
 + Task cancellation
 
 Callback is flexible wrapper upon `MulticastDelegate` that accepts different delegate types, it's for `Action` and `Func`

@@ -1,6 +1,6 @@
 ﻿namespace CallbackCore.Temp;
 
-public readonly struct MethodCallback<TArg1, TArg2>
+public readonly struct MethodCallback<TArg1, TArg2>: IInvokeable<TArg1, TArg2>
 {
     public async Task InvokeAsync(TArg1 arg1, TArg2 arg2, CancellationToken ct = default)
     {
